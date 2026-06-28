@@ -8,7 +8,8 @@ date: "2026-06-28"
 
 
 ```{r}
-
+coral_bleaching<-read.csv("C:/Users/jd131798/Downloads/Marine_data_analysis/Marine_data_analysis/Data/Coral_Bleaching.csv")
+head(coral_bleaching)
 ```
 
 ```{r}

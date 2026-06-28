@@ -1,4 +1,4 @@
-id,region,subregion,country,location,lat,lon,year,depth,severity_code,bleaching_severity,coral_family,coral_species,percentage_affected,mortality_code,mortality,water_temperature,source,country_code
+ID,region,subregion,country,location,lat,lon,year,depth,severity_code,bleaching_severity,coral_family,coral_species,percentage_affected,mortality_code,mortality,water_temperature,source,country_code
 1,Americas,Eastern Caribbean,Netherlands Antilles,,5.542,125.221,1998,,3,High,,,51,Unknown,,,R@RSEA: UP Marine Science In,ANT
 2,Asia,Southeast Asia,Philippines,,13.302,121.533,1998,,3,High,,,71,Unknown,,,R@RSEA: UP Marine Science In,PHL
 3,Asia,Southeast Asia,Philippines,,12.312,122.196,1998,,3,High,,,71,Unknown,,,R@RSEA: UP Marine Science In,PHL

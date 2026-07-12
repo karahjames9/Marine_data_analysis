@@ -5,7 +5,8 @@ date: "2026-06-28"
 ---
 
 ## Introduction
-This project will be about the bleaching severity along different coral species throughout regions of the world. In hoping to assess how parts of the world have different thriving coral species and communtities. It would be interesting to observe similarities in how affected coral species are during bleaching events per year 
+This project will be about the bleaching severity along different coral species throughout regions of the world. In hoping to assess how parts of the world have different thriving coral species and communities. It would be interesting to observe similarities in how affected coral species are during bleaching events per year. 
+
 
 ```{r}
 coral_bleaching<-read.csv("C:/Users/jd131798/Downloads/Marine_data_analysis/Data/Coral_Bleaching.csv")
@@ -15,6 +16,8 @@ head(coral_bleaching)
 ```{r warning=FALSE}
 install.packages("tidyverse")
 library(tidyverse)
+library(dplyr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -24,27 +27,103 @@ head(Coral_bleaching_clean)
 
 
 ```{r}
-
+#this plot is a standard ggplot2 with points as the years indicating severity based on year timeline. The severity code is based on a 0-3 observational scale; 3= high bleaching , 0= no bleaching. 
+ggplot(data=Coral_bleaching_clean)+
+  geom_point(mapping=aes(x=region, y=severity_code, colour=year))
 ```
 
 ```{r}
-
+# counts the number of observations per year. 
+ggplot(data=Coral_bleaching_clean)+
+  geom_bar(mapping=aes(x= year))
 ```
 
 ```{r}
-
+# the number of observations across the mortality code scale. No real relationship among year or location
+ggplot(data=Coral_bleaching_clean)+
+  geom_bar(mapping=aes(x= mortality_code))
 ```
 
 ```{r}
-
+ggplot(data = Coral_bleaching_clean) +
+  geom_bar(mapping=aes(x = region, y = mortality), stat= "identity")
+```
+```{r}
+ggplot(data = Coral_bleaching_clean) +
+  geom_bar(mapping=aes(x = region, fill=bleaching_severity))
 ```
 
+```{r}
+library(dplyr)
+select_coral_bleaching <- Coral_bleaching_clean %>% 
+  select(-"subregion", -"country", -"location", -"lat", -"lon", -"depth", -"water_temperature", -"country_code", -"source")
+head(select_coral_bleaching)
+```
 
+```{r}
+ggplot(data=Coral_bleaching_clean)+
+  stat_summary(
+  mapping=aes(x=region, y=severity_code), 
+  fun.min=min, 
+  fun.max=max, 
+  fun=median
+)
+```
 
+```{r}
+# this plot depicts the level of bleaching severity per year along the number of observation(high,medium,low)
+ggplot(data = Coral_bleaching_clean) +
+  geom_bar(mapping=aes(x = year, fill=bleaching_severity), position="dodge")
+```
 
+```{r}
+Coral_bleaching_clean|>
+  ggplot(aes(x=year, y=severity_code, color=region))+
+  geom_point(data=Coral_bleaching_clean, aes(x=year, y=bleaching_severity, color=region), 
+             position=position_jitter(width=0.5, height=0.2), alpha=0.6, size=2, inherit.aes=FALSE)+
+  geom_point(position="dodge", size=2, pch=21)+
+  
+  geom_errorbar(aes(ymin=bleaching_severity, ymax=bleaching_severity), width=0.5, position=position_dodge(0.9))+
+  facet_wrap(~region, scales= "fixed")+
+  theme_minimal()+
+  theme(
+    strip.text = element_text(size=12, face="bold"),
+    legend.position="bottom"
+  )+
+  labs(
+    title="Coral Bleaching Severity by Region and Year",
+    x="Year",
+    y="Severity Code",
+    color="Region")
+  )
+    
+```
+# this graph above displays the bleaching severity across different regions of the world. The points represent individual observations, with some jitter added to avoid overlap. The error bars indicate the range of severity for each year within each region. The facet wrap allows for a clear comparison of bleaching severity trends across different regions over time.
+```{r}
+Coral_bleaching_clean|>
+  ggplot(aes(x=year, y=percentage_affected, color=region))+
+  geom_point(data=Coral_bleaching_clean, aes(x=year, y=mortality, color=region), 
+             position=position_jitter(width=0.5, height=0.2), alpha=0.6, size=2, inherit.aes=FALSE)+
+  geom_point(position="dodge", size=2, pch=21)+
+  
+  geom_errorbar(aes(ymin=mortality, ymax=mortality), width=0.5, position=position_dodge(0.9))+
+  facet_wrap(~region, scales= "fixed")+
+  theme_minimal()+
+  theme(
+    strip.text = element_text(size=12, face="bold"),
+    legend.position="bottom"
+  )+
+  labs(
+    title="Coral mortality by Region and Year",
+    x="Year",
+    y="Mortality",
+    color="Region")
+  )
+```
+# this plot displays the mortality rates of coral across different regions over time. Similar to the previous plot, individual observations are represented by points with jitter to avoid overlap, and error bars indicate the range of mortality for each year within each region. The facet wrap allows for a clear comparison of mortality trends across different regions over time.
+```{r}
 
-
-
+```
 
 
 

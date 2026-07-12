@@ -1,23 +1,25 @@
 ---
-title: "MB5370-Marine data analysis"
+title: "MB5370-Marine data analysis- Coral Bleaching"
 output: html_document
 date: "2026-06-28"
 ---
 
 ## Introduction
-
+This project will be about the bleaching severity along different coral species throughout regions of the world. In hoping to assess how parts of the world have different thriving coral species and communtities. It would be interesting to observe similarities in how affected coral species are during bleaching events per year 
 
 ```{r}
-coral_bleaching<-read.csv("C:/Users/jd131798/Downloads/Marine_data_analysis/Marine_data_analysis/Data/Coral_Bleaching.csv")
+coral_bleaching<-read.csv("C:/Users/jd131798/Downloads/Marine_data_analysis/Data/Coral_Bleaching.csv")
 head(coral_bleaching)
 ```
 
-```{r}
-
+```{r warning=FALSE}
+install.packages("tidyverse")
+library(tidyverse)
 ```
 
 ```{r}
-
+Coral_bleaching_clean<- na.omit(coral_bleaching)
+head(Coral_bleaching_clean)
 ```
 
 

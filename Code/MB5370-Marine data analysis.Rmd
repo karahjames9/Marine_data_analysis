@@ -5,10 +5,11 @@ date: "2026-06-28"
 ---
 
 ## Introduction
-This project will be about the bleaching severity along different coral species throughout regions of the world. In hoping to assess how parts of the world have different thriving coral species and communities. It would be interesting to observe similarities in how affected coral species are during bleaching events per year. 
+This project will be about the bleaching severity along different coral species throughout regions of the world. In hoping to assess how parts of the world have different bleaching severity observation. It would be interesting to observe differences and/or similarities in how affected coral bleaching changes per year and within each region. 
 
 
 ```{r}
+# Read the csv file of the coral bleaching dataset
 coral_bleaching<-read.csv("C:/Users/jd131798/Downloads/Marine_data_analysis/Data/Coral_Bleaching.csv")
 head(coral_bleaching)
 ```
@@ -21,6 +22,7 @@ library(ggplot2)
 ```
 
 ```{r}
+# removing categories that do not apply to the topic i want to analysize with this dataset
 coral_bleaching_clean <-  coral_bleaching %>%
   select(-"subregion", -"country", -"location", -"lat", -"lon", -"depth", -"water_temperature", -"country_code", -"source", -"water_temperature" , -"percentage_affected", -"coral_family", -"coral_species", -"mortality", -"mortality_code")
 ```
@@ -31,6 +33,7 @@ coral_clean<- na.omit(coral_bleaching_clean)
 ```
 
 ```{r}
+#clear all the unknowns and/or blank entries
 coral_clean <- coral_clean %>%
   mutate(bleaching_severity = na_if(bleaching_severity, "Unknown"))
 
@@ -38,11 +41,13 @@ coral_clean2<- na.omit(coral_clean)
 ```
 
 ```{r}
+# list the main categories in the clean dataset
 distinct(coral_clean2, bleaching_severity)
 ```
 
 
 ```{r}
+# Displays the number of observations per year. Not exactly what I want 
 coral_clean2|>
   ggplot(aes(x=year, y=severity_code, color=region))+
   geom_point(data=coral_clean2, aes(x=year, y=severity_code, color=region), 
@@ -63,10 +68,9 @@ coral_clean2|>
     color="Region")
     
 ```
-# this graph above displays the bleaching severity across different regions of the world. The points represent individual observations, with some jitter added to avoid overlap. The error bars indicate the range of severity for each year within each region. The facet wrap allows for a clear comparison of bleaching severity trends across different regions over time.
-
 
 ```{r}
+# experimenting with ways to display the data
 #NO DON'T USE
 coral_clean2|>
   ggplot(aes(x=year, y=severity_code, colour=region))+
@@ -110,6 +114,7 @@ coral_clean2|>
     color="Region")
 ```
 ```{r}
+#NO DO NOT USE
 coral_clean2|>
   ggplot(aes(x=year, y=severity_code, fill = region)) +
 geom_violin(alpha = 0.5) +
@@ -132,6 +137,7 @@ theme_minimal() +
 ```
 
 ```{r}
+#NO DO NOT USE
 ggplot(data = coral_clean2, aes(x=year, y=severity_code, fill = region)) +
   geom_boxplot()+
 
@@ -155,27 +161,13 @@ year_order<-distinct(coral_clean2, year)
 ```
 
 ```{r}
-aggregate(coral_clean2 ~ region, data = coral_clean2, FUN = mean)
-```
-```{r}
 average_severity_by_region <- coral_clean2 %>%
   group_by(region, year) %>%
   summarise(mean_severity = mean(severity_code, na.rm = TRUE))
 ```
 
-grouped_penguins <- group_by(penguins, species)
-
-# Notice that the table looks identical, but metadata notes 'Groups: species [3]'
-print(grouped_penguins)
-
-# Collapsing the buckets into explicit summary metrics
-species_mass_summary <- summarise(grouped_penguins,
-  mean_mass_g = mean(body_mass_g)
-)
-
-print(species_mass_summary)
-
 ```{r}
+#final graph: this graph displays the mean bleaching severity across different regions of the world over time. The points represent the average severity for each year within each region. The facet wrap allows for a clear comparison of bleaching severity trends across different regions over time. The y-axis is labeled with descriptive categories for bleaching severity, making it easier to interpret the results.
 average_severity_by_region|>
   ggplot(aes(x=year, y=mean_severity,  colour=region, size = mean_severity))+
   geom_point(data=average_severity_by_region, aes(x=year, y=mean_severity, colour=region), 

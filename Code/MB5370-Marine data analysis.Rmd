@@ -19,22 +19,22 @@ library(tidyverse)
 library(dplyr)
 library(ggplot2)
 ```
+
 ```{r}
 coral_bleaching_clean <-  coral_bleaching %>%
   select(-"subregion", -"country", -"location", -"lat", -"lon", -"depth", -"water_temperature", -"country_code", -"source", -"water_temperature" , -"percentage_affected", -"coral_family", -"coral_species", -"mortality", -"mortality_code")
 ```
 
 
-
 ```{r}
 coral_clean<- na.omit(coral_bleaching_clean)
-
 ```
+
 ```{r}
 coral_clean <- coral_clean %>%
   mutate(bleaching_severity = na_if(bleaching_severity, "Unknown"))
 
-coral_clean2<- na.omit(coral_clean_U)
+coral_clean2<- na.omit(coral_clean)
 ```
 
 ```{r}
@@ -64,7 +64,184 @@ coral_clean2|>
     
 ```
 # this graph above displays the bleaching severity across different regions of the world. The points represent individual observations, with some jitter added to avoid overlap. The error bars indicate the range of severity for each year within each region. The facet wrap allows for a clear comparison of bleaching severity trends across different regions over time.
+
+
 ```{r}
+#NO DON'T USE
+coral_clean2|>
+  ggplot(aes(x=year, y=severity_code, colour=region))+
+  geom_violin(data=coral_clean2, aes(x=year, y=severity_code, fill=region), 
+             position=position_jitter(width=0.5, height=0.2), alpha=0.6, size=2, inherit.aes=FALSE)+
+  geom_point(position="dodge", size=1, pch=20)+
+
+  facet_wrap(~region, scales= "fixed")+
+  ggtitle("Centered Plot Title") +
+  theme_minimal()+
+  theme(
+    strip.text = element_text(size=12, face="bold", hjust = 0.5),
+    legend.position="bottom"
+  )+
+  labs(
+    title="Coral Bleaching Severity by Region and Year",
+    x="Year",
+    y="Severity Code",
+    color="Region")
+```
+```{r}
+#NO DO NOT USE
+coral_clean2|>
+  ggplot(aes(x=year, y=severity_code, color=region))+
+  geom_line(data=coral_clean2, aes(x=year, y=severity_code, color=region), 
+             position=position_jitter(width=0.9, height=0.3), alpha=0.4, size=2, inherit.aes=FALSE)+
+  geom_point(position="dodge", size=2, pch=20)+
+  geom_line(linewidth = 1.0) +
+
+  facet_wrap(~region, scales= "fixed")+
+  ggtitle("Centered Plot Title") +
+  theme_minimal()+
+  theme(
+    strip.text = element_text(size=12, face="bold", hjust = 0.6),
+    legend.position="bottom"
+  )+
+  labs(
+    title="Coral Bleaching Severity by Region and Year",
+    x="Year",
+    y="Severity Code",
+    color="Region")
+```
+```{r}
+coral_clean2|>
+  ggplot(aes(x=year, y=severity_code, fill = region)) +
+geom_violin(alpha = 0.5) +
+geom_jitter(position = position_jitter(width = 0.2), alpha = 0.6) +
+theme_minimal() +
+
+
+  facet_wrap(~region, scales= "fixed")+
+  ggtitle("Centered Coral Bleaching Severity by Region and Year") +
+  theme_minimal()+
+  theme(
+    strip.text = element_text(size=11, face="bold", hjust = 0.3),
+    legend.position="bottom"
+  )+
+  labs(
+    title="Coral Bleaching Severity by Region and Year",
+    x="Year",
+    y="Severity Code",
+    color="Region")
+```
+
+```{r}
+ggplot(data = coral_clean2, aes(x=year, y=severity_code, fill = region)) +
+  geom_boxplot()+
+
+ facet_wrap(~region, scales= "fixed")+
+  ggtitle("Centered Coral Bleaching Severity by Region and Year") +
+  theme_minimal()+
+  theme(
+    strip.text = element_text(size=11, face="bold", hjust = 0.3),
+    legend.position="bottom"
+  )+
+  labs(
+    title="Coral Bleaching Severity by Region and Year",
+    x="Year",
+    y="Severity Code",
+    color="Region")
+```
+
+```{r}
+#listing the years in order to prepare to calculate the mean of the bleaching severity per region over time
+year_order<-distinct(coral_clean2, year)
+```
+
+```{r}
+aggregate(coral_clean2 ~ region, data = coral_clean2, FUN = mean)
+```
+```{r}
+average_severity_by_region <- coral_clean2 %>%
+  group_by(region, year) %>%
+  summarise(mean_severity = mean(severity_code, na.rm = TRUE))
+```
+
+grouped_penguins <- group_by(penguins, species)
+
+# Notice that the table looks identical, but metadata notes 'Groups: species [3]'
+print(grouped_penguins)
+
+# Collapsing the buckets into explicit summary metrics
+species_mass_summary <- summarise(grouped_penguins,
+  mean_mass_g = mean(body_mass_g)
+)
+
+print(species_mass_summary)
+
+```{r}
+average_severity_by_region|>
+  ggplot(aes(x=year, y=mean_severity,  colour=region, size = mean_severity))+
+  geom_point(data=average_severity_by_region, aes(x=year, y=mean_severity, colour=region), 
+             position=position_jitter(width=0.5, height=0.2), alpha=0.7)+
+  geom_point(position="dodge", size= 3.5, pch=20)+
+  facet_wrap(~region)+
+
+    scale_y_continuous(
+    limits = c(0, 3),
+    breaks = 0:3,
+    labels = c("No Bleaching", "Low", "Medium", "High")
+  ) +
+  
+  theme_minimal()+
+  theme(
+    strip.text = element_text(size=12, face="bold", hjust = 0.5),
+    legend.position="bottom"
+  )+
+  labs(
+    title="Coral Bleaching Severity by Region and Year",
+    x="Year",
+    y="Mean Bleaching Severity ",
+    color="Regions")
+```
+```{r}
+summary_table <- coral_clean2 %>%
+  group_by(region, year) %>%
+  summarise(
+    mean_severity = mean(severity_code, na.rm = TRUE),
+    n = n(),
+    no_bleaching = sum(severity_code == 0),
+    low = sum(severity_code == 1),
+    medium = sum(severity_code == 2),
+    high = sum(severity_code == 3),
+    .groups = "drop"
+  )
+
+summary_table
+
+```
+
+```{r}
+ggplot(summary_table,
+       aes(x = year,
+           y = mean_severity,
+           colour = region,
+           group = region)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 2) +
+  facet_wrap(~region) +
+  scale_y_continuous(
+    limits = c(0, 3),
+    breaks = 0:3,
+    labels = c("No Bleaching", "Low", "Medium", "High")
+  ) +
+  theme_bw() +
+  labs(
+    title = " Coral Bleaching Severity by Region and Year",
+    x = "Year",
+    y = " Bleaching Severity",
+    colour = "Region"
+  )
+```
+
+```{r}
+#Reference code if needed
 Coral_bleaching_clean|>
   ggplot(aes(x=year, y=percentage_affected, color=region))+
   geom_point(data=Coral_bleaching_clean, aes(x=year, y=mortality, color=region), 
@@ -85,7 +262,7 @@ Coral_bleaching_clean|>
     color="Region")
   )
 ```
-# this plot displays the mortality rates of coral across different regions over time. Similar to the previous plot, individual observations are represented by points with jitter to avoid overlap, and error bars indicate the range of mortality for each year within each region. The facet wrap allows for a clear comparison of mortality trends across different regions over time.
+
 ```{r}
 select_coral_bleaching|>
   ggplot(aes(x=year, y=severity_code, color=region))+

@@ -1,1 +1,1 @@
-This repository goes into detail on how I conducted my own project about coral bleaching throughout the regions of the world. 
+This repository goes into detail on how I conducted my own project, for my Technique in Marine Science course, about coral bleaching throughout the regions of the world. This project was designed to test my skills in programming fundamentals, data wrangling, visualization, and problem solving to conduct a series of codes to analyze a publicly available external dataset. 
